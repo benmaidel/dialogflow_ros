@@ -93,7 +93,7 @@ class GspeechClient:
 
                 # Parse the final utterance
                 if result.is_final:
-                    rospy.logdebug("Google Speech result: {}".format(transcript))
+                    rospy.loginfo("Google Speech result: {}".format(transcript))
                     # Received data is Unicode, convert it to string
                     transcript = transcript.encode('utf-8')
                     # Strip the initial space if any
@@ -103,7 +103,7 @@ class GspeechClient:
                     if transcript.lower() == 'exit' or rospy.is_shutdown():
                         self.shutdown()
                     # Send the rest of the sentence to topic
-                    self.text_pub.publish(result[1])
+                    self.text_pub.publish(transcript)
 
         except InvalidArgument as e:
             rospy.logwarn("{} caught in Mic. Client".format(e))
@@ -116,7 +116,7 @@ class GspeechClient:
         """Creates the Google Speech API client, configures it, and sends/gets
         audio/text data for parsing.
         """
-        language_code = 'en-US'
+        language_code = 'de-DE'
         # Hints for the API
         context = types.SpeechContext(phrases=self.context)
         client = speech.SpeechClient()
@@ -130,13 +130,13 @@ class GspeechClient:
         # NEARFIELD: The audio was captured from a closely placed microphone.
         # MIDFIELD: The speaker is within 3 meters of the microphone.
         # FARFIELD: The speaker is more than 3 meters away from the microphone.
-        metadata.microphone_distance = (enums.RecognitionMetadata.MicrophoneDistance.MIDFIELD)
+        metadata.microphone_distance = (enums.RecognitionMetadata.MicrophoneDistance.NEARFIELD)
         # Device Type:
         # PC: Speech was recorded using a personal computer or tablet.
         # VEHICLE: Speech was recorded in a vehicle.
         # OTHER_OUTDOOR_DEVICE: Speech was recorded outdoors.
         # OTHER_INDOOR_DEVICE: Speech was recorded indoors.
-        metadata.recording_device_type = (enums.RecognitionMetadata.RecordingDeviceType.PC)
+        metadata.recording_device_type = (enums.RecognitionMetadata.RecordingDeviceType.OTHER_INDOOR_DEVICE)
         # Media Type:
         # AUDIO: The speech data is an audio recording.
         # VIDEO: The speech data originally recorded on a video.
